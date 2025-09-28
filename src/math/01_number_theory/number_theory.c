@@ -1,4 +1,13 @@
-#include <stdio.h>
+#include <number_theory.h>
+
+int gcd(int first, int second) {
+    while (second != 0) {
+        int temp = first %= second;
+        first = second;
+        second = temp;
+    }
+    return first;
+}
 
 int lcmByGCD(int a, int b) {
     int first = a;
@@ -21,9 +30,9 @@ int lcm(int a, int b) {
 }
 
 int main() {
-    int a = 532;
-    int b = 135;
-    // lcm(a, b);
-    printf("Result - %d\n",lcmByGCD(a, b));
+    int a = 102;
+    int b = 465;
+    int res = gcd(a, b);
+    printf("Result: %d\n", res);    
     return 0;
 }
