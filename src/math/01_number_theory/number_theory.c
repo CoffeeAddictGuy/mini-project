@@ -27,8 +27,6 @@ int lcmByGCD(int a, int b) {
   return first / a;
 }
 
-// Integer factorization
-
 void sieveOfEratosthenes(int *array, int n) {
   for (int i = 0; i < n; i++) {
     if (array[i] != 0) {
@@ -39,3 +37,21 @@ void sieveOfEratosthenes(int *array, int n) {
   }
 }
 
+// Integer factorization
+void trialDivision(int n) {
+  if (n < 2) {
+    printf("Neither prime nor composite\n");
+    return;
+  }
+
+  int i, j = 0;
+  for (i = 2; i < n / 2; i++) {
+    if (i * i <= n && j != 1) {
+      if (n % i == 0) {
+        printf("Composite number\n");
+        return;
+      }
+    }
+  }
+  printf("A prime number\n");
+}
