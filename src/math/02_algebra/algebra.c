@@ -25,3 +25,25 @@ struct quadEq *quadraticEquation(int *a, int *b, int *c) {
   }
   return res;
 }
+
+void sumPol(int *f, int *f_s, int *s, int *s_s, int *res) {
+  int n = (*f_s > *s_s) ? *f_s : *s_s;
+
+  for (int i = 0; i < n; i++) {
+    int a = (i < *f_s) ? f[i] : 0;
+    int b = (i < *s_s) ? s[i] : 0;
+    res[i] = a + b;
+  }
+}
+
+void subPol(int *f, int *f_s, int *s, int *s_s, int *res) {
+  int n = (*f_s > *s_s) ? *f_s : *s_s;
+
+  for (int i = 0; i < n; i++) {
+    int a = (i < *f_s) ? f[i] : 0;
+    int b = (i < *s_s) ? s[i] : 0;
+    res[i] = a - b;
+  }
+}
+
+void mulPol(int *f, int *f_s, int *s, int *s_s, int *res) {}
