@@ -47,3 +47,18 @@ void subPol(int *f, int *f_s, int *s, int *s_s, int *res) {
 }
 
 void mulPol(int *f, int *f_s, int *s, int *s_s, int *res) {}
+
+void printPol(struct polDef *pd, int *s) {
+  for (int i = 0; i < *s; i++) {
+    if (pd[i].c == 0)
+      continue;
+    if (i != 0 && pd[i].c > 0)
+      printf("+");
+    printf("%d", pd[i].c);
+    if (pd[i].px == 1)
+      printf("%c", 'x');
+    if (pd[i].py == 1)
+      printf("%c", 'y');
+  }
+  printf("\n");
+}
