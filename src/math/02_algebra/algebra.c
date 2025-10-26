@@ -27,48 +27,49 @@ struct quadEq *quadraticEquation(int *a, int *b, int *c) {
   return res;
 }
 
-void sumPol(int *f, int *f_s, int *s, int *s_s, int *res) {
-  int n = (*f_s > *s_s) ? *f_s : *s_s;
-
-  for (int i = 0; i < n; i++) {
-    int a = (i < *f_s) ? f[i] : 0;
-    int b = (i < *s_s) ? s[i] : 0;
-    res[i] = a + b;
-  }
-}
-
-void subPol(int *f, int *f_s, int *s, int *s_s, int *res) {
-  int n = (*f_s > *s_s) ? *f_s : *s_s;
-
-  for (int i = 0; i < n; i++) {
-    int a = (i < *f_s) ? f[i] : 0;
-    int b = (i < *s_s) ? s[i] : 0;
-    res[i] = a - b;
-  }
-}
-
-void mulPol(int *f, int *f_s, int *s, int *s_s, int *res) {}
-
-struct polDef *sumPolNew(struct polDef *f, int *f_s, struct polDef *s,
-                         int *s_s) {
+void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
+            struct polDef *res, int *rsize) {
   polSimplefire(f, f_s);
   polSimplefire(s, s_s);
 
-  struct polDef *res = malloc(sizeof(struct polDef) * (*f_s + *s_s));
+  *rsize = *f_s + *s_s;
+
   int b = (*f_s > *s_s) ? *f_s : *s_s;
   int l = (*f_s > *s_s) ? *s_s : *f_s;
 
   for (int i = 0; i < b; i++) {
     for (int j = 0; j < l; j++) {
-      if (f[i].px == s[i].px && f[i].py == s[i].py) {
-        res[i].c = f[i].c + s[i].c;
+      if (f[i].px == s[j].px && f[i].py == s[j].py) {
+        res[i].c = f[i].c + s[j].c;
         res[i].px = f[i].px;
         res[i].py = f[i].py;
       }
     }
   }
-  return res;
 }
+
+void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
+            struct polDef *res, int *rsize) {
+  polSimplefire(f, f_s);
+  polSimplefire(s, s_s);
+
+  *rsize = *f_s + *s_s;
+
+  int b = (*f_s > *s_s) ? *f_s : *s_s;
+  int l = (*f_s > *s_s) ? *f_s : *s_s;
+
+  for (int i = 0; i < b; i++) {
+    for (int j = 0; j < l; j++) {
+      if (f[i].px == s[j].px && f[i].py == s[j].py) {
+        res[i].c = f[i].c - s[j].c;
+        res[i].px = f[i].px;
+        res[i].py = f[i].py;
+      }
+    }
+  }
+}
+
+void mulPol(int *f, int *f_s, int *s, int *s_s, int *res) {}
 
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
