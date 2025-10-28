@@ -1,10 +1,8 @@
-#include <stdio.h>
 #include <criterion/criterion.h>
 #include <number_theory.h>
+#include <stdio.h>
 
-void setup(void) {
-  puts("Tests for number theory module");
-}
+void setup(void) { puts("Tests for number theory module"); }
 
 Test(number_theory, gcd) {
   cr_expect_eq(gcd(12, 8), 4);
@@ -14,6 +12,4 @@ Test(number_theory, gcd) {
   cr_expect_eq(gcd(17, 13), 1);
 }
 
-Test(number_theory, lcm) {
-
-}
+Test(number_theory, lcm) {}
