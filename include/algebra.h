@@ -6,8 +6,10 @@ struct quadEq {
 
 struct polDef {
   int c;
-  int px;
-  int py;
+  int x;
+  int dx;
+  int y;
+  int dy;
 };
 
 struct quadEq* quadraticEquation(int *a, int *b, int *c);
@@ -17,7 +19,7 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s, struct polDe
 void mulPol(int* f, int* f_s, int* s, int* s_s, int *res);
 
 void polSimplefire(struct polDef *pd, int* s);
-void moveNullPol(struct polDef *pd, int* s, int z, int l);
+void moveNullPol(struct polDef *pd, int* s, int z);
 int getLastNotNullPol(struct polDef *pd, int n);
 
 void printPol(struct polDef* pd, int* s);
