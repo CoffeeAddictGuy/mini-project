@@ -39,10 +39,13 @@ void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
 
   for (int i = 0; i < b; i++) {
     for (int j = 0; j < l; j++) {
-      if (f[i].px == s[j].px && f[i].py == s[j].py) {
+      if (f[i].x == s[j].x && f[i].y == s[j].y && f[i].dx == s[j].dx &&
+          f[i].dy == s[j].dy) {
         res[i].c = f[i].c + s[j].c;
-        res[i].px = f[i].px;
-        res[i].py = f[i].py;
+        res[i].x = f[i].x;
+        res[i].y = f[i].y;
+        res[i].dx = f[i].dx;
+        res[i].dy = f[i].dy;
       }
     }
   }
@@ -52,18 +55,20 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
             struct polDef *res, int *rsize) {
   polSimplefire(f, f_s);
   polSimplefire(s, s_s);
-
+  printPol(f, f_s);
   *rsize = *f_s + *s_s;
 
   int b = (*f_s > *s_s) ? *f_s : *s_s;
   int l = (*f_s > *s_s) ? *f_s : *s_s;
-
   for (int i = 0; i < b; i++) {
     for (int j = 0; j < l; j++) {
-      if (f[i].px == s[j].px && f[i].py == s[j].py) {
+      if (f[i].x == s[j].x && f[i].y == s[j].y && f[i].dx == s[j].dx &&
+          f[i].dy == s[j].dy) {
         res[i].c = f[i].c - s[j].c;
-        res[i].px = f[i].px;
-        res[i].py = f[i].py;
+        res[i].x = f[i].x;
+        res[i].y = f[i].y;
+        res[i].dx = f[i].dx;
+        res[i].dy = f[i].dy;
       }
     }
   }
@@ -74,38 +79,48 @@ void mulPol(int *f, int *f_s, int *s, int *s_s, int *res) {}
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
   for (int i = 0; i < *s; i++) {
-    if (pd[i].px == 0 && pd[i].py == 0 && pd[i].c == 0)
+    if (pd[i].x == 0 && pd[i].y == 0 && pd[i].c == 0)
       continue;
     for (int j = *s - 1; j > i; j--) {
-      if (pd[i].px == pd[j].px && pd[i].py == pd[j].py) {
-        k += 1;
+      if (pd[i].x == pd[j].x && pd[i].y == pd[j].y && pd[i].dx == pd[j].dx &&
+          pd[i].dy == pd[j].dy) {
         pd[i].c += pd[j].c;
         pd[j].c = 0;
-        pd[j].px = 0;
-        pd[j].py = 0;
-        moveNullPol(pd, s, j, getLastNotNullPol(pd, *s));
+        pd[j].x = 0;
+        pd[j].y = 0;
+        pd[j].dx = 0;
+        pd[j].dy = 0;
+        moveNullPol(pd, s, j);
+        k += 1;
       }
     }
   }
   *s -= k;
 }
 
-void moveNullPol(struct polDef *pd, int *s, int z, int l) {
+void moveNullPol(struct polDef *pd, int *s, int z) {
+  if (pd[z + 1].c == 0 && pd[z + 1].x == 0 && pd[z + 1].y == 0)
+    return;
+  int l = getLastNotNullPol(pd, *s - 1);
   pd[z].c = pd[l].c;
-  pd[z].px = pd[l].px;
-  pd[z].py = pd[l].py;
+  pd[z].x = pd[l].x;
+  pd[z].y = pd[l].y;
+  pd[z].dx = pd[l].dx;
+  pd[z].dy = pd[l].dy;
 
   pd[l].c = 0;
-  pd[l].px = 0;
-  pd[l].py = 0;
+  pd[l].x = 0;
+  pd[l].y = 0;
+  pd[l].dx = 0;
+  pd[l].dy = 0;
 }
 
 int getLastNotNullPol(struct polDef *pd, int n) {
-  if (pd[n].c != 0 || pd[n].px != 0 || pd[n].py != 0) {
-    n -= 1;
-    getLastNotNullPol(pd, n);
+  if (pd[n].c != 0 || pd[n].x != 0 || pd[n].y != 0) {
+    return n;
   }
-  return n;
+  n -= 1;
+  getLastNotNullPol(pd, n);
 }
 
 void printPol(struct polDef *pd, int *s) {
@@ -116,10 +131,14 @@ void printPol(struct polDef *pd, int *s) {
       printf("+");
     if (pd[i].c != 1)
       printf("%d", pd[i].c);
-    if (pd[i].px == 1)
+    if (pd[i].x == 1)
       printf("%c", 'x');
-    if (pd[i].py == 1)
+    if (pd[i].dx > 1)
+      printf("^%d", pd[i].dx);
+    if (pd[i].y == 1)
       printf("%c", 'y');
+    if (pd[i].dy > 1)
+      printf("^%d", pd[i].dy);
   }
   printf("\n");
 }
