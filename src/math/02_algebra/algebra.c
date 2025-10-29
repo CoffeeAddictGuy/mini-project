@@ -51,6 +51,7 @@ void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
       }
     }
   }
+  res = realloc(res, sizeof(struct polDef) * *rsize);
 }
 
 void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -75,6 +76,7 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
       }
     }
   }
+  res = realloc(res, sizeof(struct polDef) * *rsize);
 }
 
 void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -147,11 +149,11 @@ void printPol(struct polDef *pd, int *s) {
     if (pd[i].x == 1)
       printf("%c", 'x');
     if (pd[i].dx > 1)
-      printf("^%d", pd[i].dx);
+      printf("^(%d)", pd[i].dx);
     if (pd[i].y == 1)
       printf("%c", 'y');
     if (pd[i].dy > 1)
-      printf("^%d", pd[i].dy);
+      printf("^(%d)", pd[i].dy);
   }
   printf("\n");
 }
