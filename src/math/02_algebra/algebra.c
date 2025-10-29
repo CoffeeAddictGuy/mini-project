@@ -30,7 +30,9 @@ struct quadEq *quadraticEquation(int *a, int *b, int *c) {
 void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
             struct polDef *res, int *rsize) {
   polSimplefire(f, f_s);
+  f = realloc(f, sizeof(struct polDef) * *f_s);
   polSimplefire(s, s_s);
+  s = realloc(s, sizeof(struct polDef) * *s_s);
 
   *rsize = *f_s + *s_s;
 
@@ -54,8 +56,9 @@ void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
 void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
             struct polDef *res, int *rsize) {
   polSimplefire(f, f_s);
+  f = realloc(f, sizeof(struct polDef) * *f_s);
   polSimplefire(s, s_s);
-  printPol(f, f_s);
+  s = realloc(s, sizeof(struct polDef) * *s_s);
   *rsize = *f_s + *s_s;
 
   int b = (*f_s > *s_s) ? *f_s : *s_s;
@@ -74,7 +77,8 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
   }
 }
 
-void mulPol(int *f, int *f_s, int *s, int *s_s, int *res) {}
+void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
+            struct polDef *res, int *rsize) {}
 
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
@@ -121,6 +125,15 @@ int getLastNotNullPol(struct polDef *pd, int n) {
   }
   n -= 1;
   getLastNotNullPol(pd, n);
+}
+
+int getZeros(struct polDef *pd, int *n) {
+  int k = 0;
+  for (int i = 0; i < *n; i++) {
+    if (pd[i].c == 0 && pd[i].x == 0 && pd[i].y == 0)
+      k++;
+  }
+  return k;
 }
 
 void printPol(struct polDef *pd, int *s) {
