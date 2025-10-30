@@ -43,11 +43,8 @@ void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
     for (int j = 0; j < l; j++) {
       if (f[i].x == s[j].x && f[i].y == s[j].y && f[i].dx == s[j].dx &&
           f[i].dy == s[j].dy) {
-        res[i].c = f[i].c + s[j].c;
-        res[i].x = f[i].x;
-        res[i].y = f[i].y;
-        res[i].dx = f[i].dx;
-        res[i].dy = f[i].dy;
+        res[i] =
+            (struct polDef){f[i].c + s[j].c, f[i].x, f[i].dx, f[i].y, f[i].dy};
       }
     }
   }
@@ -68,11 +65,8 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
     for (int j = 0; j < l; j++) {
       if (f[i].x == s[j].x && f[i].y == s[j].y && f[i].dx == s[j].dx &&
           f[i].dy == s[j].dy) {
-        res[i].c = f[i].c - s[j].c;
-        res[i].x = f[i].x;
-        res[i].y = f[i].y;
-        res[i].dx = f[i].dx;
-        res[i].dy = f[i].dy;
+        res[i] =
+            (struct polDef){f[i].c - s[j].c, f[i].x, f[i].dx, f[i].y, f[i].dy};
       }
     }
   }
@@ -80,7 +74,28 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
 }
 
 void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
-            struct polDef *res, int *rsize) {}
+            struct polDef *res, int *rsize) {
+  polSimplefire(f, f_s);
+  f = realloc(f, sizeof(struct polDef) * *f_s);
+  polSimplefire(s, s_s);
+  s = realloc(s, sizeof(struct polDef) * *s_s);
+  *rsize = *f_s * *s_s;
+
+  int n = 0;
+
+  for (int i = 0; i < *f_s; i++) {
+    for (int j = 0; j < *s_s; j++) {
+      res[n].c = f[i].c * s[j].c;
+      res[n].dx = f[i].dx + s[j].dx;
+      res[n].dy = f[i].dy + s[j].dy;
+      res[n].x = (f[i].x == 1 || s[j].x == 1) ? 1 : f[i].x + s[j].x;
+      res[n].y = (f[i].y == 1 || s[j].y == 1) ? 1 : f[i].y + s[j].y;
+      n++;
+    }
+  }
+  polSimplefire(res, rsize);
+  res = realloc(res, sizeof(struct polDef) * *rsize);
+}
 
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
@@ -137,6 +152,9 @@ int getZeros(struct polDef *pd, int *n) {
   }
   return k;
 }
+
+void polSort(struct polDef *pd, int *s) {}
+int getHighestTerm(struct polDef *pd, int *s) { return 0; }
 
 void printPol(struct polDef *pd, int *s) {
   for (int i = 0; i < *s; i++) {

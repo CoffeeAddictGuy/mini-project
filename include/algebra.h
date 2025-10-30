@@ -22,5 +22,7 @@ void polSimplefire(struct polDef *pd, int* s);
 void moveNullPol(struct polDef *pd, int* s, int z);
 int getLastNotNullPol(struct polDef *pd, int n);
 int getZeros(struct polDef *pd, int *n);
+void polSort(struct polDef *pd, int* s);
+int getHighestTerm(struct polDef *pd, int *s);
 
 void printPol(struct polDef* pd, int* s);
