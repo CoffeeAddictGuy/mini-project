@@ -97,6 +97,9 @@ void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
   res = realloc(res, sizeof(struct polDef) * *rsize);
 }
 
+void divPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
+            struct polDef *res, int *rsize) {}
+
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
   for (int i = 0; i < *s; i++) {
@@ -154,7 +157,15 @@ int getZeros(struct polDef *pd, int *n) {
 }
 
 void polSort(struct polDef *pd, int *s) {}
-int getHighestTerm(struct polDef *pd, int *s) { return 0; }
+
+int getHighestTerm(struct polDef *pd, int *s) {
+  int hT = 0;
+  for (int i = 1; i < *s; i++) {
+    if (pd[i].dx > pd[hT].dx)
+      hT = i;
+  }
+  return hT;
+}
 
 void printPol(struct polDef *pd, int *s) {
   for (int i = 0; i < *s; i++) {
