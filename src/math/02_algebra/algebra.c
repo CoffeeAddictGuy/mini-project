@@ -181,6 +181,14 @@ int getHighestTerm(struct polDef *pd, int *s) {
   return hT;
 }
 
+void swapPolVar(struct polDef *a, struct polDef *b) {
+  struct polDef *t = malloc(sizeof(struct polDef) * 1);
+  *t = *a;
+  *a = *b;
+  *b = *t;
+  free(t);
+}
+
 void printPol(struct polDef *pd, int *s) {
   for (int i = 0; i < *s; i++) {
     if (pd[i].c == 0)

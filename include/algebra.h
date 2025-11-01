@@ -27,3 +27,4 @@ void polSort(struct polDef *pd, int* s);
 int getHighestTerm(struct polDef *pd, int *s);
 
 void printPol(struct polDef* pd, int* s);
+void swapPol(struct polDef *a, struct polDef *b);
