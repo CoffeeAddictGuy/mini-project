@@ -2,8 +2,10 @@
 #include <limits.h>
 #include <math.h>
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct quadEq *quadraticEquation(int *a, int *b, int *c) {
   struct quadEq *res = malloc(sizeof(struct quadEq));
@@ -27,60 +29,44 @@ struct quadEq *quadraticEquation(int *a, int *b, int *c) {
   return res;
 }
 
-void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
-            struct polDef *res, int *rsize) {
-  polSimplefire(f, f_s);
-  f = realloc(f, sizeof(struct polDef) * *f_s);
-  polSimplefire(s, s_s);
-  s = realloc(s, sizeof(struct polDef) * *s_s);
-
-  *rsize = *f_s + *s_s;
-
-  int b = (*f_s > *s_s) ? *f_s : *s_s;
-  int l = (*f_s > *s_s) ? *s_s : *f_s;
-
-  for (int i = 0; i < b; i++) {
-    for (int j = 0; j < l; j++) {
-      if (f[i].x == s[j].x && f[i].y == s[j].y && f[i].dx == s[j].dx &&
-          f[i].dy == s[j].dy) {
-        res[i] =
-            (struct polDef){f[i].c + s[j].c, f[i].x, f[i].dx, f[i].y, f[i].dy};
+void sumator(struct polDef *res, int *rsize) {
+  for (int i = 0; i < *rsize - 1; i++) {
+    for (int j = i + 1; j < *rsize; j++) {
+      if (res[i].x == res[j].x && res[i].y == res[j].y &&
+          res[i].dx == res[j].dx && res[i].dy == res[j].dy) {
+        res[i] = (struct polDef){res[i].c + res[j].c, res[i].x, res[i].dx,
+                                 res[i].y, res[i].dy};
+        res[j] = (struct polDef){0, 0, 0, 0, 0};
       }
     }
   }
-  res = realloc(res, sizeof(struct polDef) * *rsize);
+}
+
+void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
+            struct polDef *res, int *rsize) {
+  const size_t sizeof_first = sizeof(*f) * *f_s;
+  const size_t sizeof_second = sizeof(*s) * *s_s;
+  memcpy(res, f, sizeof_first);
+  memcpy(&res[*f_s], s, sizeof_second);
+  sumator(res, rsize);
 }
 
 void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
             struct polDef *res, int *rsize) {
-  polSimplefire(f, f_s);
-  f = realloc(f, sizeof(struct polDef) * *f_s);
-  polSimplefire(s, s_s);
-  s = realloc(s, sizeof(struct polDef) * *s_s);
-  *rsize = *f_s + *s_s;
-
-  int b = (*f_s > *s_s) ? *f_s : *s_s;
-  int l = (*f_s > *s_s) ? *f_s : *s_s;
-  for (int i = 0; i < b; i++) {
-    for (int j = 0; j < l; j++) {
-      if (f[i].x == s[j].x && f[i].y == s[j].y && f[i].dx == s[j].dx &&
-          f[i].dy == s[j].dy) {
-        res[i] =
-            (struct polDef){f[i].c - s[j].c, f[i].x, f[i].dx, f[i].y, f[i].dy};
-      }
-    }
+  struct polDef *sT = malloc(sizeof(struct polDef) * *s_s);
+  for (int i = 0; i < *s_s; i++) {
+    sT[i] = (struct polDef){-s[i].c, s[i].x, s[i].dx, s[i].y, s[i].dy};
   }
-  res = realloc(res, sizeof(struct polDef) * *rsize);
+  const size_t sizeof_first = sizeof(*f) * *f_s;
+  const size_t sizeof_second = sizeof(*sT) * *s_s;
+  memcpy(res, f, sizeof_first);
+  memcpy(&res[*f_s], sT, sizeof_second);
+  sumator(res, rsize);
+  free(sT);
 }
 
 void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
             struct polDef *res, int *rsize) {
-  polSimplefire(f, f_s);
-  f = realloc(f, sizeof(struct polDef) * *f_s);
-  polSimplefire(s, s_s);
-  s = realloc(s, sizeof(struct polDef) * *s_s);
-  *rsize = *f_s * *s_s;
-
   int n = 0;
 
   for (int i = 0; i < *f_s; i++) {
@@ -93,12 +79,41 @@ void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
       n++;
     }
   }
-  polSimplefire(res, rsize);
-  res = realloc(res, sizeof(struct polDef) * *rsize);
 }
 
 void divPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
-            struct polDef *res, int *rsize) {}
+            struct polDef *res, int *rsize, struct polDef *rem, int *remsize) {
+  int hD = (f[getHighestTerm(f, f_s)].dx > f[getHighestTerm(f, f_s)].dy)
+               ? getHighestTerm(f, f_s)
+               : f[getHighestTerm(f, f_s)].dy;
+  int hDi = (f[getHighestTerm(f, f_s)].dx > f[getHighestTerm(f, f_s)].dy)
+                ? f[getHighestTerm(f, f_s)].dx
+                : f[getHighestTerm(f, f_s)].dy;
+  int hDivI = (s[getHighestTerm(s, s_s)].dx > s[getHighestTerm(s, s_s)].dy)
+                  ? s[getHighestTerm(s, s_s)].dx
+                  : s[getHighestTerm(s, s_s)].dy;
+  if (hD < hDi || hD < hDi)
+    return;
+
+  int tmpSize = sizeof(struct polDef) * *f_s;
+  struct polDef *tmp = malloc(tmpSize);
+  tmp = memcpy(tmp, f, tmpSize);
+  // printPol(tmp, f_s);
+  struct polDef *ans = malloc(sizeof(struct polDef) * *f_s);
+  int t = sizeof(struct polDef) * 1;
+  struct polDef *temp = malloc(t);
+
+  temp[0].c = (tmp[hD].c == 1) ? 1 : tmp[hD].c / s[hDi].c;
+  temp[0].x = (tmp[hD].x == 1) ? 1 : 0;
+  temp[0].y = (tmp[hD].y == 1) ? 1 : 0;
+  temp[0].dx = (temp[0].x == 0) ? 0 : tmp[hD].dx - s[hDi].dx;
+  temp[0].dy = (temp[0].y == 0) ? 0 : tmp[hD].dy - s[hDi].dy;
+  printPol(temp, &t);
+  mulPol(temp, &t, s, s_s, ans, f_s);
+  printPol(ans, f_s);
+  subPol(tmp, &tmpSize, ans, f_s, tmp, &tmpSize);
+  printPol(tmp, &tmpSize);
+}
 
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
@@ -106,6 +121,8 @@ void polSimplefire(struct polDef *pd, int *s) {
     if (pd[i].x == 0 && pd[i].y == 0 && pd[i].c == 0)
       continue;
     for (int j = *s - 1; j > i; j--) {
+      if (pd[j].x == 0 && pd[j].y == 0 && pd[j].c == 0)
+        continue;
       if (pd[i].x == pd[j].x && pd[i].y == pd[j].y && pd[i].dx == pd[j].dx &&
           pd[i].dy == pd[j].dy) {
         pd[i].c += pd[j].c;
@@ -123,7 +140,8 @@ void polSimplefire(struct polDef *pd, int *s) {
 }
 
 void moveNullPol(struct polDef *pd, int *s, int z) {
-  if (pd[z + 1].c == 0 && pd[z + 1].x == 0 && pd[z + 1].y == 0)
+  if ((pd[z + 1].c == 0 && pd[z + 1].x == 0 && pd[z + 1].y == 0) ||
+      (z == *s - 1))
     return;
   int l = getLastNotNullPol(pd, *s - 1);
   pd[z].c = pd[l].c;
