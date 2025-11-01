@@ -57,11 +57,7 @@ void subPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
   for (int i = 0; i < *s_s; i++) {
     sT[i] = (struct polDef){-s[i].c, s[i].x, s[i].dx, s[i].y, s[i].dy};
   }
-  const size_t sizeof_first = sizeof(*f) * *f_s;
-  const size_t sizeof_second = sizeof(*sT) * *s_s;
-  memcpy(res, f, sizeof_first);
-  memcpy(&res[*f_s], sT, sizeof_second);
-  sumator(res, rsize);
+  sumPol(f, f_s, sT, s_s, res, rsize);
   free(sT);
 }
 
