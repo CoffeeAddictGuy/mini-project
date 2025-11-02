@@ -20,6 +20,7 @@ void mulPol(struct polDef *f, int* f_s, struct polDef *s, int* s_s, struct polDe
 void divPol(struct polDef *f, int* f_s, struct polDef *s, int* s_s, struct polDef *res, int *rsize, struct polDef *rem, int *remsize);
 
 void polSimplefire(struct polDef *pd, int* s);
+void moveZeros(struct polDef *pol, int *s);
 void moveNullPol(struct polDef *pd, int* s, int z);
 int getLastNotNullPol(struct polDef *pd, int n);
 int getZeros(struct polDef *pd, int *n);
@@ -27,4 +28,4 @@ void polSort(struct polDef *pd, int* s);
 int getHighestTerm(struct polDef *pd, int *s);
 
 void printPol(struct polDef* pd, int* s);
-void swapPol(struct polDef *a, struct polDef *b);
+void swapPolElem(struct polDef *a, struct polDef *b);

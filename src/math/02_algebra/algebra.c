@@ -40,6 +40,7 @@ void sumator(struct polDef *res, int *rsize) {
       }
     }
   }
+  moveZeros(res, rsize);
 }
 
 void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -75,58 +76,24 @@ void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
       n++;
     }
   }
+  *rsize = n;
 }
 
 void divPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
-            struct polDef *res, int *rsize, struct polDef *rem, int *remsize) {
-  int hD = (f[getHighestTerm(f, f_s)].dx > f[getHighestTerm(f, f_s)].dy)
-               ? getHighestTerm(f, f_s)
-               : f[getHighestTerm(f, f_s)].dy;
-  int hDi = (f[getHighestTerm(f, f_s)].dx > f[getHighestTerm(f, f_s)].dy)
-                ? f[getHighestTerm(f, f_s)].dx
-                : f[getHighestTerm(f, f_s)].dy;
-  int hDivI = (s[getHighestTerm(s, s_s)].dx > s[getHighestTerm(s, s_s)].dy)
-                  ? s[getHighestTerm(s, s_s)].dx
-                  : s[getHighestTerm(s, s_s)].dy;
-  if (hD < hDi || hD < hDi)
-    return;
-
-  int tmpSize = sizeof(struct polDef) * *f_s;
-  struct polDef *tmp = malloc(tmpSize);
-  tmp = memcpy(tmp, f, tmpSize);
-  // printPol(tmp, f_s);
-  struct polDef *ans = malloc(sizeof(struct polDef) * *f_s);
-  int t = sizeof(struct polDef) * 1;
-  struct polDef *temp = malloc(t);
-
-  temp[0].c = (tmp[hD].c == 1) ? 1 : tmp[hD].c / s[hDi].c;
-  temp[0].x = (tmp[hD].x == 1) ? 1 : 0;
-  temp[0].y = (tmp[hD].y == 1) ? 1 : 0;
-  temp[0].dx = (temp[0].x == 0) ? 0 : tmp[hD].dx - s[hDi].dx;
-  temp[0].dy = (temp[0].y == 0) ? 0 : tmp[hD].dy - s[hDi].dy;
-  printPol(temp, &t);
-  mulPol(temp, &t, s, s_s, ans, f_s);
-  printPol(ans, f_s);
-  subPol(tmp, &tmpSize, ans, f_s, tmp, &tmpSize);
-  printPol(tmp, &tmpSize);
-}
+            struct polDef *res, int *rsize, struct polDef *rem, int *remsize) {}
 
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
   for (int i = 0; i < *s; i++) {
-    if (pd[i].x == 0 && pd[i].y == 0 && pd[i].c == 0)
+    if (pd[i].c == 0)
       continue;
     for (int j = *s - 1; j > i; j--) {
-      if (pd[j].x == 0 && pd[j].y == 0 && pd[j].c == 0)
+      if (pd[j].c == 0)
         continue;
       if (pd[i].x == pd[j].x && pd[i].y == pd[j].y && pd[i].dx == pd[j].dx &&
           pd[i].dy == pd[j].dy) {
         pd[i].c += pd[j].c;
-        pd[j].c = 0;
-        pd[j].x = 0;
-        pd[j].y = 0;
-        pd[j].dx = 0;
-        pd[j].dy = 0;
+        pd[j] = (struct polDef){0, 0, 0, 0, 0};
         moveNullPol(pd, s, j);
         k += 1;
       }
@@ -135,30 +102,29 @@ void polSimplefire(struct polDef *pd, int *s) {
   *s -= k;
 }
 
-void moveNullPol(struct polDef *pd, int *s, int z) {
-  if ((pd[z + 1].c == 0 && pd[z + 1].x == 0 && pd[z + 1].y == 0) ||
-      (z == *s - 1))
-    return;
-  int l = getLastNotNullPol(pd, *s - 1);
-  pd[z].c = pd[l].c;
-  pd[z].x = pd[l].x;
-  pd[z].y = pd[l].y;
-  pd[z].dx = pd[l].dx;
-  pd[z].dy = pd[l].dy;
+void moveZeros(struct polDef *pol, int *s) {
+  int test = 1;
+  int l = 0;
+  for (int i = 0; i < *s; i++) {
+    if (pol[i].c == 0) {
+      moveNullPol(pol, s, i);
+    }
+  }
+}
 
-  pd[l].c = 0;
-  pd[l].x = 0;
-  pd[l].y = 0;
-  pd[l].dx = 0;
-  pd[l].dy = 0;
+void moveNullPol(struct polDef *pd, int *s, int z) {
+  if (z == *s - 1)
+    return;
+  int l = getLastNotNullPol(pd, *s);
+  if (z < l)
+    swapPolElem(&pd[z], &pd[l]);
 }
 
 int getLastNotNullPol(struct polDef *pd, int n) {
-  if (pd[n].c != 0 || pd[n].x != 0 || pd[n].y != 0) {
-    return n;
+  while (n >= 0 && pd[n].c == 0) {
+    n--;
   }
-  n -= 1;
-  getLastNotNullPol(pd, n);
+  return n < 0 ? 0 : n;
 }
 
 int getZeros(struct polDef *pd, int *n) {
@@ -181,7 +147,7 @@ int getHighestTerm(struct polDef *pd, int *s) {
   return hT;
 }
 
-void swapPolVar(struct polDef *a, struct polDef *b) {
+void swapPolElem(struct polDef *a, struct polDef *b) {
   struct polDef *t = malloc(sizeof(struct polDef) * 1);
   *t = *a;
   *a = *b;
@@ -191,8 +157,8 @@ void swapPolVar(struct polDef *a, struct polDef *b) {
 
 void printPol(struct polDef *pd, int *s) {
   for (int i = 0; i < *s; i++) {
-    if (pd[i].c == 0)
-      continue;
+    // if (pd[i].c == 0)
+    //   continue;
     if (i != 0 && pd[i].c > 0)
       printf("+");
     if (pd[i].c != 1)
