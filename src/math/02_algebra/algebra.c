@@ -40,7 +40,7 @@ void sumator(struct polDef *res, int *rsize) {
       }
     }
   }
-  moveZeros(res, rsize);
+  // moveZeros(res, rsize);
 }
 
 void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -76,7 +76,7 @@ void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
       n++;
     }
   }
-  *rsize = n;
+  // *rsize = n;
 }
 
 void divPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -103,8 +103,6 @@ void polSimplefire(struct polDef *pd, int *s) {
 }
 
 void moveZeros(struct polDef *pol, int *s) {
-  int test = 1;
-  int l = 0;
   for (int i = 0; i < *s; i++) {
     if (pol[i].c == 0) {
       moveNullPol(pol, s, i);
@@ -130,10 +128,19 @@ int getLastNotNullPol(struct polDef *pd, int n) {
 int getZeros(struct polDef *pd, int *n) {
   int k = 0;
   for (int i = 0; i < *n; i++) {
-    if (pd[i].c == 0 && pd[i].x == 0 && pd[i].y == 0)
+    if (pd[i].c == 0)
       k++;
   }
   return k;
+}
+
+int isZerosATE(struct polDef *pd, int *s) {
+  int m = getZeros(pd, s);
+  for (int i = *s - m; i < *s; i++) {
+    if (pd[i].c != 0)
+      return 0;
+  }
+  return 1;
 }
 
 void polSort(struct polDef *pd, int *s) {}

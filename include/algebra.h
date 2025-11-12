@@ -22,6 +22,7 @@ void divPol(struct polDef *f, int* f_s, struct polDef *s, int* s_s, struct polDe
 void polSimplefire(struct polDef *pd, int* s);
 void moveZeros(struct polDef *pol, int *s);
 void moveNullPol(struct polDef *pd, int* s, int z);
+int isZerosATE(struct polDef *pd, int* s);
 int getLastNotNullPol(struct polDef *pd, int n);
 int getZeros(struct polDef *pd, int *n);
 void polSort(struct polDef *pd, int* s);
