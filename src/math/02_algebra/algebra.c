@@ -40,7 +40,7 @@ void sumator(struct polDef *res, int *rsize) {
       }
     }
   }
-  // moveZeros(res, rsize);
+  moveZeros(res, rsize);
 }
 
 void sumPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -76,7 +76,7 @@ void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
       n++;
     }
   }
-  // *rsize = n;
+  sumator(res, rsize);
 }
 
 void divPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
@@ -103,19 +103,29 @@ void polSimplefire(struct polDef *pd, int *s) {
 }
 
 void moveZeros(struct polDef *pol, int *s) {
-  for (int i = 0; i < *s; i++) {
-    if (pol[i].c == 0) {
-      moveNullPol(pol, s, i);
+  if (!isZerosATE(pol, s)) {
+    for (int i = 0; i < *s; i++) {
+      if (pol[i].c == 0) {
+        moveNullPol(pol, s, i);
+      }
     }
   }
+  int newSize = 0;
+  for (int i = 0; i < *s; i++) {
+    if (pol[i].c != 0)
+      newSize++;
+  }
+  *s = newSize;
 }
 
 void moveNullPol(struct polDef *pd, int *s, int z) {
   if (z == *s - 1)
     return;
   int l = getLastNotNullPol(pd, *s);
-  if (z < l)
-    swapPolElem(&pd[z], &pd[l]);
+  if (l <= 1)
+    return;
+
+  swapPolElem(&pd[z], &pd[l]);
 }
 
 int getLastNotNullPol(struct polDef *pd, int n) {
@@ -164,8 +174,8 @@ void swapPolElem(struct polDef *a, struct polDef *b) {
 
 void printPol(struct polDef *pd, int *s) {
   for (int i = 0; i < *s; i++) {
-    // if (pd[i].c == 0)
-    //   continue;
+    if (pd[i].c == 0)
+      continue;
     if (i != 0 && pd[i].c > 0)
       printf("+");
     if (pd[i].c != 1)
