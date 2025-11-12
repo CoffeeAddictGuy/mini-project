@@ -81,6 +81,7 @@ void mulPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
 
 void divPol(struct polDef *f, int *f_s, struct polDef *s, int *s_s,
             struct polDef *res, int *rsize, struct polDef *rem, int *remsize) {}
+}
 
 void polSimplefire(struct polDef *pd, int *s) {
   int k = 0;
@@ -178,8 +179,10 @@ void printPol(struct polDef *pd, int *s) {
       continue;
     if (i != 0 && pd[i].c > 0)
       printf("+");
-    if (pd[i].c != 1)
+    if (pd[i].c != 1 && pd[i].c != -1)
       printf("%d", pd[i].c);
+    if (pd[i].c == -1)
+      printf("-");
     if (pd[i].x == 1)
       printf("%c", 'x');
     if (pd[i].dx > 1)
