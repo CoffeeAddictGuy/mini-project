@@ -181,8 +181,10 @@ void printPol(struct polDef *pd, int *s) {
       printf("+");
     if (pd[i].c != 1 && pd[i].c != -1)
       printf("%d", pd[i].c);
-    if (pd[i].c == -1)
+    if (pd[i].c == -1 && (pd[i].x == 1 || pd[i].y == 1))
       printf("-");
+    if (pd[i].c == -1 && (pd[i].x != 1 || pd[i].y != 1))
+      printf("%d", pd[i].c);
     if (pd[i].x == 1)
       printf("%c", 'x');
     if (pd[i].dx > 1)
